@@ -23,13 +23,24 @@ ${body.marketplace}
 Gaya Bahasa:
 ${body.gayaBahasa}
 
-Buat output:
+WAJIB mengembalikan JSON valid.
 
-1. Caption Shopee
-2. Caption TikTok Shop
-3. Caption Instagram
-4. CTA Penjualan
-5. 15 Hashtag
+Format:
+
+{
+  "shopee": "",
+  "tiktok": "",
+  "instagram": "",
+  "cta": "",
+  "hashtags": ""
+}
+
+Aturan:
+- Jangan tambahkan markdown
+- Jangan tambahkan \`\`\`json
+- Jangan tambahkan penjelasan
+- Jangan tambahkan teks lain
+- Hanya tampilkan JSON
 `;
 
     const response =
@@ -38,16 +49,32 @@ Buat output:
         contents: prompt,
       });
 
-    return Response.json({
-      result: response.text,
-    });
+    const rawText =
+      response.text ?? "";
+
+    const cleanedText = rawText
+      .replace(/```json/g, "")
+      .replace(/```/g, "")
+      .trim();
+
+    const parsed = JSON.parse(
+      cleanedText
+    );
+
+    return Response.json(parsed);
   } catch (error: any) {
-    console.error(error);
+    console.error(
+      "CAPTION AI ERROR:",
+      error
+    );
 
     return Response.json(
       {
-        result:
-          "Terjadi kesalahan saat generate caption.",
+        shopee: "",
+        tiktok: "",
+        instagram: "",
+        cta: "",
+        hashtags: "",
       },
       {
         status: 500,

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import AIResult from "@/components/ai/AIResult";
+import ProductResult from "@/components/ai/ProductResult";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -144,8 +144,8 @@ export default function ProductAIPage() {
         </Button>
 
         {result && (
-          <AIResult
-            result={result}
+          <ProductResult
+  result={result}
           />
         )}
       </div>

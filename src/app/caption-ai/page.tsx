@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import AIResult from "@/components/ai/AIResult";
+import CaptionResult from "@/components/ai/CaptionResult";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -24,12 +24,12 @@ export default function CaptionAIPage() {
     useState(false);
 
   const [result, setResult] =
-    useState("");
+    useState<any>(null);
 
   async function handleGenerate() {
     try {
       setLoading(true);
-      setResult("");
+      setResult(null);
 
       const response = await fetch(
         "/api/generate-caption",
@@ -51,20 +51,16 @@ export default function CaptionAIPage() {
       const data =
         await response.json();
 
-      setResult(data.result);
+      setResult(data);
     } catch (error) {
       console.error(error);
-
-      setResult(
-        "Terjadi kesalahan saat generate caption."
-      );
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <main className="p-6">
+    <main className="p-6 max-w-5xl mx-auto">
       <h1 className="text-3xl font-bold mb-6">
         Caption AI Gemini
       </h1>
@@ -78,7 +74,9 @@ export default function CaptionAIPage() {
           <Input
             value={namaProduk}
             onChange={(e) =>
-              setNamaProduk(e.target.value)
+              setNamaProduk(
+                e.target.value
+              )
             }
             placeholder="Contoh: Sepatu Running Pria"
           />
@@ -92,7 +90,9 @@ export default function CaptionAIPage() {
           <Input
             value={audience}
             onChange={(e) =>
-              setAudience(e.target.value)
+              setAudience(
+                e.target.value
+              )
             }
             placeholder="Contoh: Pria usia 20-35 tahun"
           />
@@ -106,7 +106,9 @@ export default function CaptionAIPage() {
           <Input
             value={marketplace}
             onChange={(e) =>
-              setMarketplace(e.target.value)
+              setMarketplace(
+                e.target.value
+              )
             }
             placeholder="Contoh: Shopee"
           />
@@ -130,7 +132,13 @@ export default function CaptionAIPage() {
 
         <Button
           onClick={handleGenerate}
-          disabled={loading}
+          disabled={
+            loading ||
+            !namaProduk ||
+            !audience ||
+            !marketplace ||
+            !gayaBahasa
+          }
         >
           {loading
             ? "Generating..."
@@ -138,9 +146,16 @@ export default function CaptionAIPage() {
         </Button>
 
         {result && (
-          <AIResult result={result} />
+          <CaptionResult
+            shopee={result.shopee}
+            tiktok={result.tiktok}
+            instagram={result.instagram}
+            cta={result.cta}
+            hashtags={result.hashtags}
+          />
         )}
       </div>
     </main>
   );
 }
+
