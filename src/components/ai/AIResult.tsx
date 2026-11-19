@@ -9,31 +9,111 @@ type AIResultProps = {
 export default function AIResult({
   result,
 }: AIResultProps) {
-  async function handleCopy() {
-    await navigator.clipboard.writeText(
-      result
-    );
-
-    alert("Hasil berhasil disalin!");
+  async function copyText(text: string) {
+    await navigator.clipboard.writeText(text);
+    alert("Berhasil disalin!");
   }
 
   return (
-    <div className="mt-6 border rounded-lg p-6 bg-white shadow-sm">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="font-bold text-2xl">
-          Hasil Gemini AI
-        </h2>
+    <div className="mt-6 space-y-6">
 
-        <Button
-          variant="outline"
-          onClick={handleCopy}
-        >
-          Copy Hasil
-        </Button>
+      <div className="border rounded-lg p-4 shadow-sm">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="font-bold text-2xl">
+            Hasil Gemini AI
+          </h2>
+
+          <Button
+            variant="outline"
+            onClick={() => copyText(result)}
+          >
+            Copy Semua
+          </Button>
+        </div>
+
+        <div className="whitespace-pre-wrap leading-7">
+          {result}
+        </div>
       </div>
 
-      <div className="whitespace-pre-wrap leading-7">
-        {result}
+      <div className="grid gap-4 md:grid-cols-2">
+
+        <div className="border rounded-lg p-4">
+          <div className="flex justify-between mb-3">
+            <h3 className="font-semibold">
+              Caption Shopee
+            </h3>
+
+            <Button
+              size="sm"
+              onClick={() => copyText(result)}
+            >
+              Copy
+            </Button>
+          </div>
+
+          <p className="text-sm text-gray-500">
+            Copy sementara seluruh hasil Gemini.
+          </p>
+        </div>
+
+        <div className="border rounded-lg p-4">
+          <div className="flex justify-between mb-3">
+            <h3 className="font-semibold">
+              Caption TikTok
+            </h3>
+
+            <Button
+              size="sm"
+              onClick={() => copyText(result)}
+            >
+              Copy
+            </Button>
+          </div>
+
+          <p className="text-sm text-gray-500">
+            Copy sementara seluruh hasil Gemini.
+          </p>
+        </div>
+
+        <div className="border rounded-lg p-4">
+          <div className="flex justify-between mb-3">
+            <h3 className="font-semibold">
+              Caption Instagram
+            </h3>
+
+            <Button
+              size="sm"
+              onClick={() => copyText(result)}
+            >
+              Copy
+            </Button>
+          </div>
+
+          <p className="text-sm text-gray-500">
+            Copy sementara seluruh hasil Gemini.
+          </p>
+        </div>
+
+        <div className="border rounded-lg p-4">
+          <div className="flex justify-between mb-3">
+            <h3 className="font-semibold">
+              Hashtag
+            </h3>
+
+            <Button
+              size="sm"
+              onClick={() => copyText(result)}
+            >
+              Copy
+            </Button>
+          </div>
+
+          <p className="text-sm text-gray-500">
+            Copy sementara seluruh hasil Gemini.
+          </p>
+        </div>
+
       </div>
     </div>
   );
