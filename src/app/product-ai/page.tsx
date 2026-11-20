@@ -45,16 +45,40 @@ export default function ProductAIPage() {
       );
 
       if (!response.ok) {
-        const errorText =
-          await response.text();
-
-        throw new Error(errorText);
+        throw new Error(
+          "Gagal generate produk"
+        );
       }
 
       const data =
         await response.json();
 
       setResult(data.result);
+
+      // SIMPAN KE SUPABASE
+      await fetch(
+        "/api/save-history",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+          body: JSON.stringify({
+            tool_name: "Product AI",
+
+            input_data:
+              JSON.stringify({
+                namaProduk,
+                kategori,
+                keunggulan,
+              }),
+
+            output_data:
+              data.result,
+          }),
+        }
+      );
     } catch (error) {
       console.error(error);
 
@@ -67,7 +91,7 @@ export default function ProductAIPage() {
   }
 
   return (
-    <main className="p-6">
+    <main className="p-6 max-w-5xl mx-auto">
       <h1 className="text-3xl font-bold mb-6">
         Product AI Gemini
       </h1>
@@ -85,7 +109,7 @@ export default function ProductAIPage() {
                 e.target.value
               )
             }
-            placeholder="Contoh: Sepatu Running Wanita"
+            placeholder="Contoh: Sepatu Running Pria"
           />
         </div>
 
@@ -117,17 +141,9 @@ export default function ProductAIPage() {
                 e.target.value
               )
             }
-            placeholder="Contoh: Kuat dan nyaman digunakan"
+            placeholder="Contoh: Ringan dan nyaman digunakan"
           />
         </div>
-
-        {(!namaProduk ||
-          !kategori ||
-          !keunggulan) && (
-          <p className="text-sm text-red-500">
-            Lengkapi semua field sebelum generate.
-          </p>
-        )}
 
         <Button
           onClick={handleGenerate}
@@ -145,7 +161,7 @@ export default function ProductAIPage() {
 
         {result && (
           <ProductResult
-  result={result}
+            result={result}
           />
         )}
       </div>

@@ -52,6 +52,29 @@ export default function CaptionAIPage() {
         await response.json();
 
       setResult(data);
+
+      // SIMPAN KE SUPABASE
+      await fetch("/api/save-history", {
+        method: "POST",
+        headers: {
+          "Content-Type":
+            "application/json",
+        },
+
+        body: JSON.stringify({
+          tool_name: "Caption AI",
+
+          input_data: JSON.stringify({
+            namaProduk,
+            audience,
+            marketplace,
+            gayaBahasa,
+          }),
+
+          output_data: JSON.stringify(data),
+        }),
+      });
+
     } catch (error) {
       console.error(error);
     } finally {
