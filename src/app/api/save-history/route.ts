@@ -4,16 +4,18 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    const { data, error } = await supabase
-      .from("histories")
-      .insert([
-        {
-          tool_name: body.tool_name,
-          input_data: body.input_data,
-          output_data: body.output_data,
-        },
-      ])
-      .select();
+    const { data, error } =
+      await supabase
+        .from("histories")
+        .insert([
+          {
+            user_id: body.user_id,
+            tool_name: body.tool_name,
+            input_data: body.input_data,
+            output_data: body.output_data,
+          },
+        ])
+        .select();
 
     if (error) {
       console.error(error);

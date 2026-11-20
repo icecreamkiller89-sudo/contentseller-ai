@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-
+import { supabase } from "@/lib/supabase";
 import CaptionResult from "@/components/ai/CaptionResult";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -27,34 +27,39 @@ export default function CaptionAIPage() {
     useState<any>(null);
 
   async function handleGenerate() {
-    try {
-      setLoading(true);
-      setResult(null);
+  try {
+    setLoading(true);
+    setResult(null);
 
-      const response = await fetch(
-        "/api/generate-caption",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
-          body: JSON.stringify({
-            namaProduk,
-            audience,
-            marketplace,
-            gayaBahasa,
-          }),
-        }
-      );
+    const response = await fetch(
+      "/api/generate-caption",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type":
+            "application/json",
+        },
+        body: JSON.stringify({
+          namaProduk,
+          audience,
+          marketplace,
+          gayaBahasa,
+        }),
+      }
+    );
 
-      const data =
-        await response.json();
+    const data =
+      await response.json();
 
-      setResult(data);
+    setResult(data);
 
-      // SIMPAN KE SUPABASE
-      await fetch("/api/save-history", {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    await fetch(
+      "/api/save-history",
+      {
         method: "POST",
         headers: {
           "Content-Type":
@@ -62,25 +67,31 @@ export default function CaptionAIPage() {
         },
 
         body: JSON.stringify({
-          tool_name: "Caption AI",
+          user_id: user?.id,
 
-          input_data: JSON.stringify({
-            namaProduk,
-            audience,
-            marketplace,
-            gayaBahasa,
-          }),
+          tool_name:
+            "Caption AI",
 
-          output_data: JSON.stringify(data),
+          input_data:
+            JSON.stringify({
+              namaProduk,
+              audience,
+              marketplace,
+              gayaBahasa,
+            }),
+
+          output_data:
+            JSON.stringify(data),
         }),
-      });
+      }
+    );
 
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
+  } catch (error) {
+    console.error(error);
+  } finally {
+    setLoading(false);
   }
+}
 
   return (
     <main className="p-6 max-w-5xl mx-auto">

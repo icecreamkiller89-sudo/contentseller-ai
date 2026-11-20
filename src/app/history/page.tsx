@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabase";
 
 type HistoryItem = {
   id: number;
+  user_id: string;
   tool_name: string;
   input_data: string;
   output_data: string;
@@ -18,25 +19,63 @@ export default function HistoryPage() {
   const [loading, setLoading] =
     useState(true);
 
+  const [filter, setFilter] =
+    useState("All");
+
   async function loadHistories() {
-    const { data, error } =
-      await supabase
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      console.log("FULL USER:", user);
+
+      let query = supabase
         .from("histories")
         .select("*")
         .order("created_at", {
           ascending: false,
         });
 
-    if (!error && data) {
-      setHistories(data);
-    }
+      if (filter !== "All") {
+        query = query.eq(
+          "tool_name",
+          filter
+        );
+      }
 
-    setLoading(false);
+      const { data, error } =
+        await query;
+
+      console.log(
+        "HISTORY DATA:",
+        data
+      );
+
+      console.log(
+        "HISTORY ERROR:",
+        error
+      );
+
+      if (error) {
+        console.error(error);
+        return;
+      }
+
+      setHistories(data || []);
+    } catch (error) {
+      console.error(
+        "LOAD HISTORY ERROR:",
+        error
+      );
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {
     loadHistories();
-  }, []);
+  }, [filter]);
 
   async function handleCopy(
     text: string
@@ -48,11 +87,51 @@ export default function HistoryPage() {
     alert("Berhasil disalin");
   }
 
+  async function handleDelete(
+    id: number
+  ) {
+    const confirmDelete =
+      confirm(
+        "Yakin ingin menghapus history ini?"
+      );
+
+    if (!confirmDelete) return;
+
+    const { error } =
+      await supabase
+        .from("histories")
+        .delete()
+        .eq("id", id);
+
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    await loadHistories();
+  }
+
   return (
     <main className="p-6 max-w-6xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">
-        History Generate
-      </h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">
+          History Generate
+        </h1>
+
+        <select
+          value={filter}
+          onChange={(e) =>
+            setFilter(
+              e.target.value
+            )
+          }
+          className="border rounded px-3 py-2"
+        >
+          <option>All</option>
+          <option>Product AI</option>
+          <option>Caption AI</option>
+        </select>
+      </div>
 
       {loading && (
         <p>Loading...</p>
@@ -61,7 +140,7 @@ export default function HistoryPage() {
       {!loading &&
         histories.length === 0 && (
           <p>
-            Belum ada data history.
+            Belum ada history.
           </p>
         )}
 
@@ -84,16 +163,29 @@ export default function HistoryPage() {
                 </p>
               </div>
 
-              <button
-                onClick={() =>
-                  handleCopy(
-                    item.output_data
-                  )
-                }
-                className="border rounded px-3 py-1"
-              >
-                Copy
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={() =>
+                    handleCopy(
+                      item.output_data
+                    )
+                  }
+                  className="border rounded px-3 py-1"
+                >
+                  Copy
+                </button>
+
+                <button
+                  onClick={() =>
+                    handleDelete(
+                      item.id
+                    )
+                  }
+                  className="bg-red-500 text-white rounded px-3 py-1"
+                >
+                  Delete
+                </button>
+              </div>
             </div>
 
             <div className="mb-3">

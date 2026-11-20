@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-
+import { supabase } from "@/lib/supabase";
 import ProductResult from "@/components/ai/ProductResult";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -24,71 +24,78 @@ export default function ProductAIPage() {
     useState("");
 
   async function handleGenerate() {
-    try {
-      setLoading(true);
-      setResult("");
+  try {
+    setLoading(true);
+    setResult("");
 
-      const response = await fetch(
-        "/api/generate-product",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
-          body: JSON.stringify({
-            namaProduk,
-            kategori,
-            keunggulan,
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(
-          "Gagal generate produk"
-        );
+    const response = await fetch(
+      "/api/generate-product",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type":
+            "application/json",
+        },
+        body: JSON.stringify({
+          namaProduk,
+          kategori,
+          keunggulan,
+        }),
       }
+    );
 
-      const data =
-        await response.json();
-
-      setResult(data.result);
-
-      // SIMPAN KE SUPABASE
-      await fetch(
-        "/api/save-history",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
-          body: JSON.stringify({
-            tool_name: "Product AI",
-
-            input_data:
-              JSON.stringify({
-                namaProduk,
-                kategori,
-                keunggulan,
-              }),
-
-            output_data:
-              data.result,
-          }),
-        }
+    if (!response.ok) {
+      throw new Error(
+        "Gagal generate produk"
       );
-    } catch (error) {
-      console.error(error);
-
-      setResult(
-        "Terjadi kesalahan saat menghubungi Gemini AI."
-      );
-    } finally {
-      setLoading(false);
     }
+
+    const data =
+      await response.json();
+
+    setResult(data.result);
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    await fetch(
+      "/api/save-history",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type":
+            "application/json",
+        },
+        body: JSON.stringify({
+          user_id: user?.id,
+
+          tool_name: "Product AI",
+
+          input_data:
+            JSON.stringify({
+              namaProduk,
+              kategori,
+              keunggulan,
+            }),
+
+          output_data:
+            data.result,
+        }),
+      }
+    );
+
+  } catch (error) {
+    console.error(error);
+
+    setResult(
+      "Terjadi kesalahan saat menghubungi Gemini AI."
+    );
+  } finally {
+    setLoading(false);
   }
+}
+
 
   return (
     <main className="p-6 max-w-5xl mx-auto">
