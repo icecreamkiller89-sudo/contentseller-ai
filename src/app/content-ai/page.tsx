@@ -49,7 +49,6 @@ export default function ContentAIPage() {
         await response.json();
 
       setResult(data);
-
     } catch (error) {
       console.error(error);
     } finally {
@@ -65,7 +64,6 @@ export default function ContentAIPage() {
         </h1>
 
         <div className="space-y-4">
-
           <input
             className="border p-2 rounded w-full"
             placeholder="Nama Produk"
@@ -112,8 +110,14 @@ export default function ContentAIPage() {
 
           <button
             onClick={handleGenerate}
+            disabled={
+              loading ||
+              !namaProduk ||
+              !audience ||
+              !platform ||
+              !gayaKonten
+            }
             className="border px-4 py-2 rounded"
-            disabled={loading}
           >
             {loading
               ? "Generating..."
