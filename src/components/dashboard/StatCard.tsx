@@ -1,25 +1,21 @@
-import { Card, CardContent } from "@/components/ui/card";
-
-interface StatCardProps {
+type StatsCardProps = {
   title: string;
-  value: string;
-}
+  value: number;
+};
 
-export default function StatCard({
+export default function StatsCard({
   title,
   value,
-}: StatCardProps) {
+}: StatsCardProps) {
   return (
-    <Card>
-      <CardContent className="p-6">
-        <h3 className="text-gray-500">
-          {title}
-        </h3>
+    <div className="border rounded-lg p-6 shadow-sm bg-white">
+      <h3 className="text-gray-500 text-sm">
+        {title}
+      </h3>
 
-        <p className="text-2xl font-bold">
-          {value}
-        </p>
-      </CardContent>
-    </Card>
+      <p className="text-3xl font-bold mt-3">
+        {value}
+      </p>
+    </div>
   );
 }

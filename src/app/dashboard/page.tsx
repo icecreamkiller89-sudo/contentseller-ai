@@ -1,13 +1,85 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import AuthGuard from "@/components/auth/AuthGuard";
+import StatsCard from "@/components/dashboard/StatsCard";
+
 import { signOut } from "@/lib/auth";
+import { supabase } from "@/lib/supabase";
 
 export default function DashboardPage() {
   const router = useRouter();
+
+  const [productCount, setProductCount] =
+    useState(0);
+
+  const [captionCount, setCaptionCount] =
+    useState(0);
+
+  const [contentCount, setContentCount] =
+    useState(0);
+
+  const [totalCount, setTotalCount] =
+    useState(0);
+
+  const [loading, setLoading] =
+    useState(true);
+
+  useEffect(() => {
+    loadStats();
+  }, []);
+
+  async function loadStats() {
+    try {
+      const { data, error } =
+        await supabase
+          .from("histories")
+          .select("tool_name");
+
+      if (error) {
+        console.error(error);
+        return;
+      }
+
+      const histories =
+        data || [];
+
+      setTotalCount(
+        histories.length
+      );
+
+      setProductCount(
+        histories.filter(
+          (item) =>
+            item.tool_name ===
+            "Product AI"
+        ).length
+      );
+
+      setCaptionCount(
+        histories.filter(
+          (item) =>
+            item.tool_name ===
+            "Caption AI"
+        ).length
+      );
+
+      setContentCount(
+        histories.filter(
+          (item) =>
+            item.tool_name ===
+            "Content AI"
+        ).length
+      );
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   async function handleLogout() {
     await signOut();
@@ -16,8 +88,8 @@ export default function DashboardPage() {
 
   return (
     <AuthGuard>
-      <main className="p-6">
-        <div className="flex justify-between items-center mb-6">
+      <main className="p-6 max-w-7xl mx-auto">
+        <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold">
             Content Seller AI Dashboard
           </h1>
@@ -30,6 +102,40 @@ export default function DashboardPage() {
           </button>
         </div>
 
+        <h2 className="text-xl font-semibold mb-4">
+          Statistik Generate
+        </h2>
+
+        {loading ? (
+          <p>Loading statistik...</p>
+        ) : (
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
+            <StatsCard
+              title="Product AI"
+              value={productCount}
+            />
+
+            <StatsCard
+              title="Caption AI"
+              value={captionCount}
+            />
+
+            <StatsCard
+              title="Content AI"
+              value={contentCount}
+            />
+
+            <StatsCard
+              title="Total Generate"
+              value={totalCount}
+            />
+          </div>
+        )}
+
+        <h2 className="text-xl font-semibold mb-4">
+          Tools AI
+        </h2>
+
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
 
           <Link
@@ -41,7 +147,7 @@ export default function DashboardPage() {
             </h2>
 
             <p>
-              Generate deskripsi produk dengan Gemini AI.
+              Generate deskripsi produk marketplace.
             </p>
           </Link>
 
@@ -54,7 +160,7 @@ export default function DashboardPage() {
             </h2>
 
             <p>
-              Generate caption Shopee, TikTok dan Instagram.
+              Generate caption marketplace.
             </p>
           </Link>
 
@@ -67,7 +173,7 @@ export default function DashboardPage() {
             </h2>
 
             <p>
-              Generate Hook Viral, Script Video, CTA dan Hashtag.
+              Generate hook, script dan CTA.
             </p>
           </Link>
 
@@ -80,7 +186,7 @@ export default function DashboardPage() {
             </h2>
 
             <p>
-              Lihat riwayat hasil generate AI.
+              Lihat seluruh riwayat generate AI.
             </p>
           </Link>
 
