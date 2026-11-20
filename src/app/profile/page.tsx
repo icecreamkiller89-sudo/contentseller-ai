@@ -5,14 +5,14 @@ import { useEffect, useState } from "react";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { supabase } from "@/lib/supabase";
 
-type UserProfile = {
+type ProfileData = {
   email: string;
   id: string;
 };
 
 export default function ProfilePage() {
-  const [user, setUser] =
-    useState<UserProfile | null>(null);
+  const [profile, setProfile] =
+    useState<ProfileData | null>(null);
 
   const [totalGenerate, setTotalGenerate] =
     useState(0);
@@ -35,7 +35,7 @@ export default function ProfilePage() {
         return;
       }
 
-      setUser({
+      setProfile({
         email: user.email || "",
         id: user.id,
       });
@@ -66,27 +66,27 @@ export default function ProfilePage() {
         ) : (
           <div className="space-y-4">
 
-            <div className="border rounded-lg p-5">
+            <div className="border rounded-lg p-5 shadow-sm">
               <h2 className="font-bold mb-2">
                 Email
               </h2>
 
               <p>
-                {user?.email}
+                {profile?.email}
               </p>
             </div>
 
-            <div className="border rounded-lg p-5">
+            <div className="border rounded-lg p-5 shadow-sm">
               <h2 className="font-bold mb-2">
                 User ID
               </h2>
 
               <p className="break-all">
-                {user?.id}
+                {profile?.id}
               </p>
             </div>
 
-            <div className="border rounded-lg p-5">
+            <div className="border rounded-lg p-5 shadow-sm">
               <h2 className="font-bold mb-2">
                 Total Generate
               </h2>
@@ -96,12 +96,12 @@ export default function ProfilePage() {
               </p>
             </div>
 
-            <div className="border rounded-lg p-5">
+            <div className="border rounded-lg p-5 shadow-sm">
               <h2 className="font-bold mb-2">
                 Membership
               </h2>
 
-              <p>
+              <p className="text-green-600 font-semibold">
                 Free Plan
               </p>
             </div>
