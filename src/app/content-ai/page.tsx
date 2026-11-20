@@ -1,10 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 
 import AuthGuard from "@/components/auth/AuthGuard";
 import ContentResult from "@/components/ai/ContentResult";
-
 import { supabase } from "@/lib/supabase";
 
 export default function ContentAIPage() {
@@ -64,12 +64,9 @@ export default function ContentAIPage() {
             "Content-Type":
               "application/json",
           },
-
           body: JSON.stringify({
             user_id: user?.id,
-
-            tool_name:
-              "Content AI",
+            tool_name: "Content AI",
 
             input_data:
               JSON.stringify({
@@ -84,7 +81,6 @@ export default function ContentAIPage() {
           }),
         }
       );
-
     } catch (error) {
       console.error(error);
     } finally {
@@ -95,9 +91,21 @@ export default function ContentAIPage() {
   return (
     <AuthGuard>
       <main className="p-6 max-w-5xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6">
-          Content AI
-        </h1>
+
+        <div className="flex items-center justify-between mb-6">
+          <Link
+            href="/dashboard"
+            className="border rounded px-4 py-2 hover:bg-gray-100"
+          >
+            ← Dashboard
+          </Link>
+
+          <h1 className="text-3xl font-bold">
+            Content AI
+          </h1>
+
+          <div />
+        </div>
 
         <div className="space-y-4">
           <input
@@ -161,38 +169,15 @@ export default function ContentAIPage() {
           </button>
 
           {result && (
-  <>
-    <div className="mt-6 border rounded-lg p-4 bg-green-50 border-green-200">
-      <p className="font-semibold text-green-700">
-        ✅ Konten berhasil dibuat dan disimpan ke History.
-      </p>
-
-      <div className="flex gap-3 mt-3">
-        <a
-          href="/dashboard"
-          className="border rounded px-4 py-2 hover:bg-white"
-        >
-          Dashboard
-        </a>
-
-        <a
-          href="/history"
-          className="border rounded px-4 py-2 hover:bg-white"
-        >
-          History
-        </a>
-      </div>
-    </div>
-
-    <ContentResult
-      hook={result.hook}
-      script={result.script}
-      cta={result.cta}
-      hashtags={result.hashtags}
-    />
-  </>
+  <ContentResult
+    hook={result.hook}
+    script={result.script}
+    cta={result.cta}
+    hashtags={result.hashtags}
+  />
 )}
         </div>
+
       </main>
     </AuthGuard>
   );

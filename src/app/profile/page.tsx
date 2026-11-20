@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import AuthGuard from "@/components/auth/AuthGuard";
@@ -44,9 +45,7 @@ export default function ProfilePage() {
         .from("histories")
         .select("id");
 
-      setTotalGenerate(
-        data?.length || 0
-      );
+      setTotalGenerate(data?.length || 0);
     } catch (error) {
       console.error(error);
     } finally {
@@ -57,9 +56,19 @@ export default function ProfilePage() {
   return (
     <AuthGuard>
       <main className="p-6 max-w-5xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6">
-          Profile Saya
-        </h1>
+
+        <div className="flex items-center justify-between mb-6">
+          <Link
+            href="/dashboard"
+            className="border rounded px-4 py-2 hover:bg-gray-100"
+          >
+            ← Dashboard
+          </Link>
+
+          <h1 className="text-3xl font-bold">
+            Profile Saya
+          </h1>
+        </div>
 
         {loading ? (
           <p>Loading...</p>

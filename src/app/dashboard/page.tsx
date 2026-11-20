@@ -134,7 +134,7 @@ export default function DashboardPage() {
           Tools AI
         </h2>
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-6">
 
           <Link
             href="/product-ai"
@@ -185,6 +185,19 @@ export default function DashboardPage() {
 
             <p>
               Lihat profil pengguna.
+            </p>
+          </Link>
+
+          <Link
+            href="/membership"
+            className="border rounded-lg p-5 hover:bg-gray-50"
+          >
+            <h2 className="font-bold text-xl mb-2">
+              Membership
+            </h2>
+
+            <p>
+              Lihat paket dan limit penggunaan.
             </p>
           </Link>
 
