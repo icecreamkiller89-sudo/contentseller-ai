@@ -6,6 +6,7 @@ import CaptionResult from "@/components/ai/CaptionResult";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import AuthGuard from "@/components/auth/AuthGuard";
 
 export default function CaptionAIPage() {
   const [namaProduk, setNamaProduk] =
@@ -94,6 +95,7 @@ export default function CaptionAIPage() {
 }
 
   return (
+    <AuthGuard>
     <main className="p-6 max-w-5xl mx-auto">
       <h1 className="text-3xl font-bold mb-6">
         Caption AI Gemini
@@ -190,6 +192,7 @@ export default function CaptionAIPage() {
         )}
       </div>
     </main>
+    </AuthGuard>
   );
 }
 

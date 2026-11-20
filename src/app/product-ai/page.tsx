@@ -1,11 +1,13 @@
 "use client";
 
+import AuthGuard from "@/components/auth/AuthGuard";
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import ProductResult from "@/components/ai/ProductResult";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+
 
 export default function ProductAIPage() {
   const [namaProduk, setNamaProduk] =
@@ -98,6 +100,7 @@ export default function ProductAIPage() {
 
 
   return (
+     <AuthGuard>
     <main className="p-6 max-w-5xl mx-auto">
       <h1 className="text-3xl font-bold mb-6">
         Product AI Gemini
@@ -173,5 +176,6 @@ export default function ProductAIPage() {
         )}
       </div>
     </main>
+    </AuthGuard>
   );
 }

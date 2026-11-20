@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import AuthGuard from "@/components/auth/AuthGuard";
 
 type HistoryItem = {
   id: number;
@@ -112,6 +113,7 @@ export default function HistoryPage() {
   }
 
   return (
+    <AuthGuard>
     <main className="p-6 max-w-6xl mx-auto">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">
@@ -211,5 +213,7 @@ export default function HistoryPage() {
         ))}
       </div>
     </main>
+    </AuthGuard>
   );
 }
+

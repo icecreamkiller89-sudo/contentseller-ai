@@ -1,41 +1,79 @@
-import Sidebar from "@/components/layout/Sidebar";
-import Header from "@/components/layout/Header";
-import StatCard from "@/components/dashboard/StatCard";
-import QuickAction from "@/components/dashboard/QuickAction";
-import RecentActivity from "@/components/dashboard/RecentActivity";
+"use client";
+
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+
+import AuthGuard from "@/components/auth/AuthGuard";
+import { signOut } from "@/lib/auth";
 
 export default function DashboardPage() {
+  const router = useRouter();
+
+  async function handleLogout() {
+    await signOut();
+
+    router.push("/login");
+  }
+
   return (
-    <div className="flex">
-      <Sidebar />
+    <AuthGuard>
+      <main className="p-6">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold">
+            Content Seller AI Dashboard
+          </h1>
 
-      <div className="flex-1">
-        <Header />
+          <button
+            onClick={handleLogout}
+            className="bg-red-500 text-white px-4 py-2 rounded"
+          >
+            Logout
+          </button>
+        </div>
 
-        <main className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <StatCard
-              title="Produk Dibuat"
-              value="25"
-            />
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
 
-            <StatCard
-              title="Caption AI"
-              value="120"
-            />
+          <Link
+            href="/product-ai"
+            className="border rounded-lg p-5 hover:bg-gray-50"
+          >
+            <h2 className="font-bold text-xl mb-2">
+              Product AI
+            </h2>
 
-            <StatCard
-              title="Konten AI"
-              value="48"
-            />
-          </div>
+            <p>
+              Generate deskripsi produk dengan Gemini AI.
+            </p>
+          </Link>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-            <QuickAction />
-            <RecentActivity />
-          </div>
-        </main>
-      </div>
-    </div>
+          <Link
+            href="/caption-ai"
+            className="border rounded-lg p-5 hover:bg-gray-50"
+          >
+            <h2 className="font-bold text-xl mb-2">
+              Caption AI
+            </h2>
+
+            <p>
+              Generate caption Shopee, TikTok dan Instagram.
+            </p>
+          </Link>
+
+          <Link
+            href="/history"
+            className="border rounded-lg p-5 hover:bg-gray-50"
+          >
+            <h2 className="font-bold text-xl mb-2">
+              History
+            </h2>
+
+            <p>
+              Lihat riwayat hasil generate AI.
+            </p>
+          </Link>
+
+        </div>
+      </main>
+    </AuthGuard>
   );
 }
