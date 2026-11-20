@@ -5,6 +5,8 @@ import { useState } from "react";
 import AuthGuard from "@/components/auth/AuthGuard";
 import ContentResult from "@/components/ai/ContentResult";
 
+import { supabase } from "@/lib/supabase";
+
 export default function ContentAIPage() {
   const [loading, setLoading] =
     useState(false);
@@ -49,6 +51,40 @@ export default function ContentAIPage() {
         await response.json();
 
       setResult(data);
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      await fetch(
+        "/api/save-history",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+
+          body: JSON.stringify({
+            user_id: user?.id,
+
+            tool_name:
+              "Content AI",
+
+            input_data:
+              JSON.stringify({
+                namaProduk,
+                audience,
+                platform,
+                gayaKonten,
+              }),
+
+            output_data:
+              JSON.stringify(data),
+          }),
+        }
+      );
+
     } catch (error) {
       console.error(error);
     } finally {
@@ -125,13 +161,37 @@ export default function ContentAIPage() {
           </button>
 
           {result && (
-            <ContentResult
-              hook={result.hook}
-              script={result.script}
-              cta={result.cta}
-              hashtags={result.hashtags}
-            />
-          )}
+  <>
+    <div className="mt-6 border rounded-lg p-4 bg-green-50 border-green-200">
+      <p className="font-semibold text-green-700">
+        ✅ Konten berhasil dibuat dan disimpan ke History.
+      </p>
+
+      <div className="flex gap-3 mt-3">
+        <a
+          href="/dashboard"
+          className="border rounded px-4 py-2 hover:bg-white"
+        >
+          Dashboard
+        </a>
+
+        <a
+          href="/history"
+          className="border rounded px-4 py-2 hover:bg-white"
+        >
+          History
+        </a>
+      </div>
+    </div>
+
+    <ContentResult
+      hook={result.hook}
+      script={result.script}
+      cta={result.cta}
+      hashtags={result.hashtags}
+    />
+  </>
+)}
         </div>
       </main>
     </AuthGuard>

@@ -11,7 +11,6 @@ export default function DashboardPage() {
 
   async function handleLogout() {
     await signOut();
-
     router.push("/login");
   }
 
@@ -31,7 +30,7 @@ export default function DashboardPage() {
           </button>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
 
           <Link
             href="/product-ai"
@@ -56,6 +55,19 @@ export default function DashboardPage() {
 
             <p>
               Generate caption Shopee, TikTok dan Instagram.
+            </p>
+          </Link>
+
+          <Link
+            href="/content-ai"
+            className="border rounded-lg p-5 hover:bg-gray-50"
+          >
+            <h2 className="font-bold text-xl mb-2">
+              Content AI
+            </h2>
+
+            <p>
+              Generate Hook Viral, Script Video, CTA dan Hashtag.
             </p>
           </Link>
 

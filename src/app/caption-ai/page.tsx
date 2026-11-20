@@ -182,14 +182,39 @@ export default function CaptionAIPage() {
         </Button>
 
         {result && (
-          <CaptionResult
-            shopee={result.shopee}
-            tiktok={result.tiktok}
-            instagram={result.instagram}
-            cta={result.cta}
-            hashtags={result.hashtags}
-          />
-        )}
+  <>
+    <div className="mt-6 border rounded-lg p-4 bg-green-50 border-green-200">
+      <p className="font-semibold text-green-700">
+        ✅ Konten berhasil dibuat dan disimpan ke History.
+      </p>
+
+      <div className="flex gap-3 mt-3">
+        <a
+          href="/dashboard"
+          className="border rounded px-4 py-2 hover:bg-white"
+        >
+          Dashboard
+        </a>
+
+        <a
+          href="/history"
+          className="border rounded px-4 py-2 hover:bg-white"
+        >
+          History
+        </a>
+      </div>
+    </div>
+
+    <CaptionResult
+      shopee={result.shopee}
+      tiktok={result.tiktok}
+      instagram={result.instagram}
+      cta={result.cta}
+      hashtags={result.hashtags}
+    />
+  </>
+)}
+
       </div>
     </main>
     </AuthGuard>

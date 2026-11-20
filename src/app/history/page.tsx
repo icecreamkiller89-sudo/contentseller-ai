@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
+
 import AuthGuard from "@/components/auth/AuthGuard";
+import { supabase } from "@/lib/supabase";
 
 type HistoryItem = {
   id: number;
@@ -25,12 +26,6 @@ export default function HistoryPage() {
 
   async function loadHistories() {
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      console.log("FULL USER:", user);
-
       let query = supabase
         .from("histories")
         .select("*")
@@ -47,16 +42,6 @@ export default function HistoryPage() {
 
       const { data, error } =
         await query;
-
-      console.log(
-        "HISTORY DATA:",
-        data
-      );
-
-      console.log(
-        "HISTORY ERROR:",
-        error
-      );
 
       if (error) {
         console.error(error);
@@ -114,106 +99,106 @@ export default function HistoryPage() {
 
   return (
     <AuthGuard>
-    <main className="p-6 max-w-6xl mx-auto">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">
-          History Generate
-        </h1>
+      <main className="p-6 max-w-6xl mx-auto">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold">
+            History Generate
+          </h1>
 
-        <select
-          value={filter}
-          onChange={(e) =>
-            setFilter(
-              e.target.value
-            )
-          }
-          className="border rounded px-3 py-2"
-        >
-          <option>All</option>
-          <option>Product AI</option>
-          <option>Caption AI</option>
-        </select>
-      </div>
+          <select
+            value={filter}
+            onChange={(e) =>
+              setFilter(
+                e.target.value
+              )
+            }
+            className="border rounded px-3 py-2"
+          >
+            <option>All</option>
+            <option>Product AI</option>
+            <option>Caption AI</option>
+            <option>Content AI</option>
+          </select>
+        </div>
 
-      {loading && (
-        <p>Loading...</p>
-      )}
-
-      {!loading &&
-        histories.length === 0 && (
-          <p>
-            Belum ada history.
-          </p>
+        {loading && (
+          <p>Loading...</p>
         )}
 
-      <div className="space-y-4">
-        {histories.map((item) => (
-          <div
-            key={item.id}
-            className="border rounded-lg p-5 shadow-sm"
-          >
-            <div className="flex justify-between items-center mb-3">
+        {!loading &&
+          histories.length === 0 && (
+            <p>
+              Belum ada history.
+            </p>
+          )}
+
+        <div className="space-y-4">
+          {histories.map((item) => (
+            <div
+              key={item.id}
+              className="border rounded-lg p-5 shadow-sm"
+            >
+              <div className="flex justify-between items-center mb-4">
+                <div>
+                  <h2 className="font-bold text-lg">
+                    {item.tool_name}
+                  </h2>
+
+                  <p className="text-sm text-gray-500">
+                    {new Date(
+                      item.created_at
+                    ).toLocaleString()}
+                  </p>
+                </div>
+
+                <div className="flex gap-2">
+                  <button
+                    onClick={() =>
+                      handleCopy(
+                        item.output_data
+                      )
+                    }
+                    className="border rounded px-3 py-1"
+                  >
+                    Copy
+                  </button>
+
+                  <button
+                    onClick={() =>
+                      handleDelete(
+                        item.id
+                      )
+                    }
+                    className="bg-red-500 text-white rounded px-3 py-1"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+
+              <div className="mb-4">
+                <h3 className="font-semibold mb-2">
+                  Input
+                </h3>
+
+                <pre className="whitespace-pre-wrap text-sm bg-gray-50 p-3 rounded">
+                  {item.input_data}
+                </pre>
+              </div>
+
               <div>
-                <h2 className="font-bold text-lg">
-                  {item.tool_name}
-                </h2>
+                <h3 className="font-semibold mb-2">
+                  Output
+                </h3>
 
-                <p className="text-sm text-gray-500">
-                  {new Date(
-                    item.created_at
-                  ).toLocaleString()}
-                </p>
-              </div>
-
-              <div className="flex gap-2">
-                <button
-                  onClick={() =>
-                    handleCopy(
-                      item.output_data
-                    )
-                  }
-                  className="border rounded px-3 py-1"
-                >
-                  Copy
-                </button>
-
-                <button
-                  onClick={() =>
-                    handleDelete(
-                      item.id
-                    )
-                  }
-                  className="bg-red-500 text-white rounded px-3 py-1"
-                >
-                  Delete
-                </button>
+                <pre className="whitespace-pre-wrap text-sm bg-gray-50 p-3 rounded">
+                  {item.output_data}
+                </pre>
               </div>
             </div>
-
-            <div className="mb-3">
-              <h3 className="font-semibold">
-                Input
-              </h3>
-
-              <pre className="whitespace-pre-wrap text-sm">
-                {item.input_data}
-              </pre>
-            </div>
-
-            <div>
-              <h3 className="font-semibold">
-                Output
-              </h3>
-
-              <pre className="whitespace-pre-wrap text-sm">
-                {item.output_data}
-              </pre>
-            </div>
-          </div>
-        ))}
-      </div>
-    </main>
+          ))}
+        </div>
+      </main>
     </AuthGuard>
   );
 }
-

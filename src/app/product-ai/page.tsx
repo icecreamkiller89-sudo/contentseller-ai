@@ -170,9 +170,33 @@ export default function ProductAIPage() {
         </Button>
 
         {result && (
-          <ProductResult
-            result={result}
-          />
+  <>
+    <div className="mt-6 border rounded-lg p-4 bg-green-50 border-green-200">
+      <p className="font-semibold text-green-700">
+        ✅ Konten berhasil dibuat dan disimpan ke History.
+      </p>
+
+      <div className="flex gap-3 mt-3">
+        <a
+          href="/dashboard"
+          className="border rounded px-4 py-2 hover:bg-white"
+        >
+          Dashboard
+        </a>
+
+        <a
+          href="/history"
+          className="border rounded px-4 py-2 hover:bg-white"
+        >
+          History
+        </a>
+      </div>
+    </div>
+
+    <ProductResult
+      result={result}
+    />
+  </>
         )}
       </div>
     </main>
