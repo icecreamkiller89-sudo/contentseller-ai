@@ -44,12 +44,9 @@ export default function DashboardPage() {
         return;
       }
 
-      const histories =
-        data || [];
+      const histories = data || [];
 
-      setTotalCount(
-        histories.length
-      );
+      setTotalCount(histories.length);
 
       setProductCount(
         histories.filter(
@@ -89,6 +86,7 @@ export default function DashboardPage() {
   return (
     <AuthGuard>
       <main className="p-6 max-w-7xl mx-auto">
+
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold">
             Content Seller AI Dashboard
@@ -136,7 +134,7 @@ export default function DashboardPage() {
           Tools AI
         </h2>
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
 
           <Link
             href="/product-ai"
@@ -178,6 +176,19 @@ export default function DashboardPage() {
           </Link>
 
           <Link
+            href="/profile"
+            className="border rounded-lg p-5 hover:bg-gray-50"
+          >
+            <h2 className="font-bold text-xl mb-2">
+              Profile
+            </h2>
+
+            <p>
+              Lihat profil pengguna.
+            </p>
+          </Link>
+
+          <Link
             href="/history"
             className="border rounded-lg p-5 hover:bg-gray-50"
           >
@@ -191,6 +202,7 @@ export default function DashboardPage() {
           </Link>
 
         </div>
+
       </main>
     </AuthGuard>
   );
