@@ -2,17 +2,14 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 
 import AuthGuard from "@/components/auth/AuthGuard";
 import StatsCard from "@/components/dashboard/StatsCard";
+import UserMenu from "@/components/dashboard/UserMenu";
 
-import { signOut } from "@/lib/auth";
 import { supabase } from "@/lib/supabase";
 
 export default function DashboardPage() {
-  const router = useRouter();
-
   const [productCount, setProductCount] =
     useState(0);
 
@@ -34,19 +31,17 @@ export default function DashboardPage() {
 
   async function loadStats() {
     try {
-      const { data, error } =
+      const { data } =
         await supabase
           .from("histories")
           .select("tool_name");
 
-      if (error) {
-        console.error(error);
-        return;
-      }
+      const histories =
+        data || [];
 
-      const histories = data || [];
-
-      setTotalCount(histories.length);
+      setTotalCount(
+        histories.length
+      );
 
       setProductCount(
         histories.filter(
@@ -78,11 +73,6 @@ export default function DashboardPage() {
     }
   }
 
-  async function handleLogout() {
-    await signOut();
-    router.push("/login");
-  }
-
   return (
     <AuthGuard>
       <main className="p-6 max-w-7xl mx-auto">
@@ -92,12 +82,7 @@ export default function DashboardPage() {
             Content Seller AI Dashboard
           </h1>
 
-          <button
-            onClick={handleLogout}
-            className="bg-red-500 text-white px-4 py-2 rounded"
-          >
-            Logout
-          </button>
+          <UserMenu />
         </div>
 
         <h2 className="text-xl font-semibold mb-4">
@@ -134,7 +119,7 @@ export default function DashboardPage() {
           Tools AI
         </h2>
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-6">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
 
           <Link
             href="/product-ai"
@@ -145,7 +130,7 @@ export default function DashboardPage() {
             </h2>
 
             <p>
-              Generate deskripsi produk marketplace.
+              Generate deskripsi produk.
             </p>
           </Link>
 
@@ -176,32 +161,6 @@ export default function DashboardPage() {
           </Link>
 
           <Link
-            href="/profile"
-            className="border rounded-lg p-5 hover:bg-gray-50"
-          >
-            <h2 className="font-bold text-xl mb-2">
-              Profile
-            </h2>
-
-            <p>
-              Lihat profil pengguna.
-            </p>
-          </Link>
-
-          <Link
-            href="/membership"
-            className="border rounded-lg p-5 hover:bg-gray-50"
-          >
-            <h2 className="font-bold text-xl mb-2">
-              Membership
-            </h2>
-
-            <p>
-              Lihat paket dan limit penggunaan.
-            </p>
-          </Link>
-
-          <Link
             href="/history"
             className="border rounded-lg p-5 hover:bg-gray-50"
           >
@@ -210,7 +169,7 @@ export default function DashboardPage() {
             </h2>
 
             <p>
-              Lihat seluruh riwayat generate AI.
+              Lihat seluruh riwayat AI.
             </p>
           </Link>
 

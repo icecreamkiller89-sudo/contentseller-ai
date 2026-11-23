@@ -21,10 +21,11 @@ export default function LoginPage() {
     try {
       setLoading(true);
 
-      const { error } = await signIn(
-        email,
-        password
-      );
+      const { error } =
+        await signIn(
+          email,
+          password
+        );
 
       if (error) {
         alert(error.message);
@@ -49,21 +50,32 @@ export default function LoginPage() {
     try {
       setLoading(true);
 
-      const { error } = await signUp(
-        email,
-        password
-      );
+      const { data, error } =
+        await signUp(
+          email,
+          password
+        );
 
       if (error) {
         alert(error.message);
         return;
       }
 
+      if (!data.user) {
+        alert(
+          "Registrasi gagal."
+        );
+        return;
+      }
+
       alert(
-        "Registrasi berhasil."
+        "Registrasi berhasil. Silakan login menggunakan akun yang baru dibuat."
       );
 
-      router.push("/dashboard");
+      setEmail("");
+      setPassword("");
+
+      router.push("/login");
     } catch (error) {
       console.error(error);
 
@@ -82,6 +94,7 @@ export default function LoginPage() {
       </h1>
 
       <div className="space-y-4">
+
         <div>
           <label className="block mb-2">
             Email
@@ -119,6 +132,7 @@ export default function LoginPage() {
         </div>
 
         <div className="flex gap-3">
+
           <button
             onClick={handleLogin}
             disabled={
@@ -144,7 +158,9 @@ export default function LoginPage() {
           >
             Register
           </button>
+
         </div>
+
       </div>
     </main>
   );
