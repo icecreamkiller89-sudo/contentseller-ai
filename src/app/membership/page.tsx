@@ -63,10 +63,70 @@ export default function MembershipPage() {
     }
   }
 
-  function handleUpgrade() {
-    alert(
-      "Integrasi pembayaran akan tersedia pada versi berikutnya."
-    );
+  async function handleUpgrade() {
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) return;
+
+      const { error } =
+        await supabase
+          .from("subscriptions")
+          .update({
+            plan: "PRO",
+            daily_limit: 999999,
+            price: 49000,
+          })
+          .eq("user_id", user.id);
+
+      if (error) {
+        alert(error.message);
+        return;
+      }
+
+      alert(
+        "Selamat! Akun berhasil upgrade ke PRO."
+      );
+
+      loadData();
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async function handleDowngrade() {
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) return;
+
+      const { error } =
+        await supabase
+          .from("subscriptions")
+          .update({
+            plan: "FREE",
+            daily_limit: 50,
+            price: 0,
+          })
+          .eq("user_id", user.id);
+
+      if (error) {
+        alert(error.message);
+        return;
+      }
+
+      alert(
+        "Akun kembali ke FREE."
+      );
+
+      loadData();
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   const limit =
@@ -153,18 +213,31 @@ export default function MembershipPage() {
               </p>
             </div>
 
-            {subscription?.plan ===
-              "FREE" && (
-              <button
-                onClick={handleUpgrade}
-                className="bg-blue-600 text-white px-4 py-2 rounded"
-              >
-                Upgrade ke PRO
-              </button>
-            )}
+            <div className="flex gap-3">
+
+              {subscription?.plan === "FREE" && (
+                <button
+                  onClick={handleUpgrade}
+                  className="bg-blue-600 text-white px-4 py-2 rounded"
+                >
+                  Upgrade ke PRO
+                </button>
+              )}
+
+              {subscription?.plan === "PRO" && (
+                <button
+                  onClick={handleDowngrade}
+                  className="bg-red-600 text-white px-4 py-2 rounded"
+                >
+                  Kembali ke FREE
+                </button>
+              )}
+
+            </div>
 
           </div>
         )}
+
       </main>
     </AuthGuard>
   );
