@@ -1,4 +1,5 @@
 "use client";
+import { checkDailyLimit } from "@/lib/usage";
 
 import Link from "next/link";
 import { useState } from "react";
@@ -32,70 +33,79 @@ export default function CaptionAIPage() {
     useState<any>(null);
 
   async function handleGenerate() {
-    try {
-      setLoading(true);
-      setResult(null);
+  const limitCheck =
+    await checkDailyLimit();
 
-      const response = await fetch(
-        "/api/generate-caption",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
-          body: JSON.stringify({
-            namaProduk,
-            audience,
-            marketplace,
-            gayaBahasa,
-          }),
-        }
-      );
+  if (!limitCheck.allowed) {
+    alert(limitCheck.message);
 
-      const data =
-        await response.json();
-
-      setResult(data);
-
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      await fetch(
-        "/api/save-history",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
-
-          body: JSON.stringify({
-            user_id: user?.id,
-
-            tool_name:
-              "Caption AI",
-
-            input_data:
-              JSON.stringify({
-                namaProduk,
-                audience,
-                marketplace,
-                gayaBahasa,
-              }),
-
-            output_data:
-              JSON.stringify(data),
-          }),
-        }
-      );
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
+    return;
   }
+
+  try {
+    setLoading(true);
+    setResult(null);
+
+    const response = await fetch(
+      "/api/generate-caption",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type":
+            "application/json",
+        },
+        body: JSON.stringify({
+          namaProduk,
+          audience,
+          marketplace,
+          gayaBahasa,
+        }),
+      }
+    );
+
+    const data =
+      await response.json();
+
+    setResult(data);
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    await fetch(
+      "/api/save-history",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type":
+            "application/json",
+        },
+
+        body: JSON.stringify({
+          user_id: user?.id,
+
+          tool_name:
+            "Caption AI",
+
+          input_data:
+            JSON.stringify({
+              namaProduk,
+              audience,
+              marketplace,
+              gayaBahasa,
+            }),
+
+          output_data:
+            JSON.stringify(data),
+        }),
+      }
+    );
+  } catch (error) {
+    console.error(error);
+  } finally {
+    setLoading(false);
+  }
+}
 
   return (
     <AuthGuard>

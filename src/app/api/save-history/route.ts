@@ -9,11 +9,16 @@ export async function POST(req: Request) {
         .from("histories")
         .insert([
           {
-            user_id: body.user_id,
-            tool_name: body.tool_name,
-            input_data: body.input_data,
-            output_data: body.output_data,
-          },
+  user_id: body.user_id,
+  tool_name: body.tool_name,
+  input_data: body.input_data,
+  output_data: body.output_data,
+
+  generated_date:
+    new Date()
+      .toISOString()
+      .split("T")[0],
+},
         ])
         .select();
 

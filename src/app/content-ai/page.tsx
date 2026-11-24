@@ -1,4 +1,5 @@
 "use client";
+import { checkDailyLimit } from "@/lib/usage";
 
 import Link from "next/link";
 import { useState } from "react";
@@ -27,66 +28,77 @@ export default function ContentAIPage() {
     useState("");
 
   async function handleGenerate() {
-    try {
-      setLoading(true);
+  const limitCheck =
+    await checkDailyLimit();
 
-      const response = await fetch(
-        "/api/generate-content",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
-          body: JSON.stringify({
-            namaProduk,
-            audience,
-            platform,
-            gayaKonten,
-          }),
-        }
-      );
+  if (!limitCheck.allowed) {
+    alert(limitCheck.message);
 
-      const data =
-        await response.json();
-
-      setResult(data);
-
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      await fetch(
-        "/api/save-history",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
-          body: JSON.stringify({
-            user_id: user?.id,
-            tool_name: "Content AI",
-
-            input_data:
-              JSON.stringify({
-                namaProduk,
-                audience,
-                platform,
-                gayaKonten,
-              }),
-
-            output_data:
-              JSON.stringify(data),
-          }),
-        }
-      );
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
+    return;
   }
+
+  try {
+    setLoading(true);
+
+    const response = await fetch(
+      "/api/generate-content",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type":
+            "application/json",
+        },
+        body: JSON.stringify({
+          namaProduk,
+          audience,
+          platform,
+          gayaKonten,
+        }),
+      }
+    );
+
+    const data =
+      await response.json();
+
+    setResult(data);
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    await fetch(
+      "/api/save-history",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type":
+            "application/json",
+        },
+        body: JSON.stringify({
+          user_id: user?.id,
+
+          tool_name:
+            "Content AI",
+
+          input_data:
+            JSON.stringify({
+              namaProduk,
+              audience,
+              platform,
+              gayaKonten,
+            }),
+
+          output_data:
+            JSON.stringify(data),
+        }),
+      }
+    );
+  } catch (error) {
+    console.error(error);
+  } finally {
+    setLoading(false);
+  }
+}
 
   return (
     <AuthGuard>
