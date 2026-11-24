@@ -9,56 +9,53 @@ import { supabase } from "@/lib/supabase";
 type Subscription = {
   plan: string;
   daily_limit: number;
+  price: number;
 };
 
 export default function MembershipPage() {
   const [subscription, setSubscription] =
-    useState<Subscription>({
-      plan: "FREE",
-      daily_limit: 50,
-    });
+    useState<Subscription | null>(null);
+
+  const [totalGenerate, setTotalGenerate] =
+    useState(0);
 
   const [loading, setLoading] =
     useState(true);
 
   useEffect(() => {
-    loadMembership();
+    loadData();
   }, []);
 
-  async function loadMembership() {
+  async function loadData() {
     try {
       const {
         data: { user },
       } = await supabase.auth.getUser();
 
-      if (!user) {
-        setLoading(false);
-        return;
-      }
+      if (!user) return;
 
-      const { data, error } =
+      const { data: subData } =
         await supabase
           .from("subscriptions")
-          .select("plan,daily_limit")
+          .select("*")
           .eq("user_id", user.id);
 
-      if (error) {
-        console.error(error);
-        return;
-      }
-
       if (
-        data &&
-        data.length > 0
+        subData &&
+        subData.length > 0
       ) {
-        setSubscription({
-          plan:
-            data[0].plan ?? "FREE",
-
-          daily_limit:
-            data[0].daily_limit ?? 50,
-        });
+        setSubscription(subData[0]);
       }
+
+      const { data: historyData } =
+        await supabase
+          .from("histories")
+          .select("id")
+          .eq("user_id", user.id);
+
+      setTotalGenerate(
+        historyData?.length || 0
+      );
     } catch (error) {
       console.error(error);
     } finally {
@@ -68,9 +65,18 @@ export default function MembershipPage() {
 
   function handleUpgrade() {
     alert(
-      "Fitur Upgrade PRO akan tersedia pada versi berikutnya."
+      "Integrasi pembayaran akan tersedia pada versi berikutnya."
     );
   }
+
+  const limit =
+    subscription?.daily_limit || 50;
+
+  const remaining =
+    Math.max(
+      limit - totalGenerate,
+      0
+    );
 
   return (
     <AuthGuard>
@@ -94,48 +100,68 @@ export default function MembershipPage() {
         ) : (
           <div className="space-y-4">
 
-            <div className="border rounded-lg p-5 shadow-sm">
+            <div className="border rounded-lg p-5">
               <h2 className="font-bold mb-2">
                 Current Plan
               </h2>
 
-              <p className="text-xl font-semibold text-green-600">
-                {subscription.plan}
+              <p className="text-2xl font-bold text-green-600">
+                {subscription?.plan}
               </p>
             </div>
 
-            <div className="border rounded-lg p-5 shadow-sm">
+            <div className="border rounded-lg p-5">
+              <h2 className="font-bold mb-2">
+                Generate Digunakan
+              </h2>
+
+              <p>
+                {totalGenerate}
+              </p>
+            </div>
+
+            <div className="border rounded-lg p-5">
               <h2 className="font-bold mb-2">
                 Daily Limit
               </h2>
 
               <p>
-                {subscription.daily_limit}
-                {" "}
-                Generate / Hari
+                {limit}
               </p>
             </div>
 
-            <div className="border rounded-lg p-5 shadow-sm">
+            <div className="border rounded-lg p-5">
               <h2 className="font-bold mb-2">
-                Fitur Aktif
+                Sisa Generate
               </h2>
 
-              <ul className="list-disc pl-6">
-                <li>Product AI</li>
-                <li>Caption AI</li>
-                <li>Content AI</li>
-                <li>History</li>
-                <li>Dashboard Statistik</li>
-              </ul>
+              <p>
+                {remaining}
+              </p>
             </div>
 
-            <button
-              onClick={handleUpgrade}
-              className="bg-blue-600 text-white px-4 py-2 rounded"
-            >
-              Upgrade ke PRO
-            </button>
+            <div className="border rounded-lg p-5">
+              <h2 className="font-bold mb-2">
+                Harga Paket
+              </h2>
+
+              <p>
+                Rp{" "}
+                {subscription?.price?.toLocaleString(
+                  "id-ID"
+                )}
+              </p>
+            </div>
+
+            {subscription?.plan ===
+              "FREE" && (
+              <button
+                onClick={handleUpgrade}
+                className="bg-blue-600 text-white px-4 py-2 rounded"
+              >
+                Upgrade ke PRO
+              </button>
+            )}
 
           </div>
         )}
