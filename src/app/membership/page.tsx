@@ -16,7 +16,7 @@ export default function MembershipPage() {
   const [subscription, setSubscription] =
     useState<Subscription | null>(null);
 
-  const [totalGenerate, setTotalGenerate] =
+  const [todayUsage, setTodayUsage] =
     useState(0);
 
   const [loading, setLoading] =
@@ -47,13 +47,18 @@ export default function MembershipPage() {
         setSubscription(subData[0]);
       }
 
+      const today = new Date()
+        .toISOString()
+        .split("T")[0];
+
       const { data: historyData } =
         await supabase
           .from("histories")
           .select("id")
-          .eq("user_id", user.id);
+          .eq("user_id", user.id)
+          .eq("generated_date", today);
 
-      setTotalGenerate(
+      setTodayUsage(
         historyData?.length || 0
       );
     } catch (error) {
@@ -120,7 +125,7 @@ export default function MembershipPage() {
       }
 
       alert(
-        "Akun kembali ke FREE."
+        "Akun berhasil kembali ke FREE."
       );
 
       loadData();
@@ -134,14 +139,19 @@ export default function MembershipPage() {
 
   const remaining =
     Math.max(
-      limit - totalGenerate,
+      limit - todayUsage,
       0
+    );
+
+  const percentage =
+    Math.min(
+      (todayUsage / limit) * 100,
+      100
     );
 
   return (
     <AuthGuard>
       <main className="p-6 max-w-5xl mx-auto">
-
         <div className="flex items-center justify-between mb-6">
           <Link
             href="/dashboard"
@@ -159,7 +169,6 @@ export default function MembershipPage() {
           <p>Loading...</p>
         ) : (
           <div className="space-y-4">
-
             <div className="border rounded-lg p-5">
               <h2 className="font-bold mb-2">
                 Current Plan
@@ -171,13 +180,30 @@ export default function MembershipPage() {
             </div>
 
             <div className="border rounded-lg p-5">
-              <h2 className="font-bold mb-2">
-                Generate Digunakan
+              <h2 className="font-bold mb-4">
+                Progress Penggunaan
               </h2>
 
-              <p>
-                {totalGenerate}
+              <div className="w-full bg-gray-200 rounded-full h-4">
+                <div
+                  className="bg-blue-600 h-4 rounded-full transition-all"
+                  style={{
+                    width: `${percentage}%`,
+                  }}
+                />
+              </div>
+
+              <p className="mt-3 text-sm">
+                {todayUsage} / {limit}
               </p>
+            </div>
+
+            <div className="border rounded-lg p-5">
+              <h2 className="font-bold mb-2">
+                Generate Hari Ini
+              </h2>
+
+              <p>{todayUsage}</p>
             </div>
 
             <div className="border rounded-lg p-5">
@@ -185,9 +211,7 @@ export default function MembershipPage() {
                 Daily Limit
               </h2>
 
-              <p>
-                {limit}
-              </p>
+              <p>{limit}</p>
             </div>
 
             <div className="border rounded-lg p-5">
@@ -195,9 +219,7 @@ export default function MembershipPage() {
                 Sisa Generate
               </h2>
 
-              <p>
-                {remaining}
-              </p>
+              <p>{remaining}</p>
             </div>
 
             <div className="border rounded-lg p-5">
@@ -214,30 +236,32 @@ export default function MembershipPage() {
             </div>
 
             <div className="flex gap-3">
-
-              {subscription?.plan === "FREE" && (
+              {subscription?.plan ===
+                "FREE" && (
                 <button
-                  onClick={handleUpgrade}
+                  onClick={
+                    handleUpgrade
+                  }
                   className="bg-blue-600 text-white px-4 py-2 rounded"
                 >
                   Upgrade ke PRO
                 </button>
               )}
 
-              {subscription?.plan === "PRO" && (
+              {subscription?.plan ===
+                "PRO" && (
                 <button
-                  onClick={handleDowngrade}
+                  onClick={
+                    handleDowngrade
+                  }
                   className="bg-red-600 text-white px-4 py-2 rounded"
                 >
                   Kembali ke FREE
                 </button>
               )}
-
             </div>
-
           </div>
         )}
-
       </main>
     </AuthGuard>
   );
