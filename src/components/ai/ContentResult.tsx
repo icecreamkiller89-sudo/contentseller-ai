@@ -1,8 +1,9 @@
 "use client";
 
+import { jsPDF } from "jspdf";
 import { Button } from "@/components/ui/button";
 
-type Props = {
+type ContentResultProps = {
   hook: string;
   script: string;
   cta: string;
@@ -14,13 +15,57 @@ export default function ContentResult({
   script,
   cta,
   hashtags,
-}: Props) {
-  async function copyText(text: string) {
-    await navigator.clipboard.writeText(text);
+}: ContentResultProps) {
+  const cleanText = (
+    text: string
+  ) =>
+    text
+      .replace(/^Tentu,\s*/i, "")
+      .replace(/^Tentu\.?\s*/i, "")
+      .replace(/^Berikut adalah\s*/i, "")
+      .replace(/^Berikut\s*/i, "")
+      .replace(/<\/?i>/gi, "")
+      .replace(/<\/?b>/gi, "")
+      .replace(/<\/?strong>/gi, "")
+      .replace(/<\/?em>/gi, "");
+
+  async function copyText(
+    text: string
+  ) {
+    await navigator.clipboard.writeText(
+      cleanText(text)
+    );
+
     alert("Berhasil disalin");
   }
 
-  function Card({
+  function exportPDF(
+    title: string,
+    content: string
+  ) {
+    const doc = new jsPDF();
+
+    doc.setFontSize(18);
+    doc.text(title, 20, 20);
+
+    doc.setFontSize(12);
+
+    const lines =
+      doc.splitTextToSize(
+        cleanText(content),
+        170
+      );
+
+    doc.text(
+      lines,
+      20,
+      35
+    );
+
+    doc.save(`${title}.pdf`);
+  }
+
+  function Section({
     title,
     content,
   }: {
@@ -28,48 +73,65 @@ export default function ContentResult({
     content: string;
   }) {
     return (
-      <div className="border rounded-lg p-4 shadow-sm">
-        <div className="flex justify-between mb-3">
+      <div className="border rounded-lg p-4 bg-white">
+        <div className="flex justify-between items-center mb-3">
           <h3 className="font-bold">
             {title}
           </h3>
 
-          <Button
-            size="sm"
-            onClick={() =>
-              copyText(content)
-            }
-          >
-            Copy
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={() =>
+                copyText(content)
+              }
+            >
+              Copy
+            </Button>
+
+            <Button
+              onClick={() =>
+                exportPDF(
+                  title,
+                  content
+                )
+              }
+            >
+              PDF
+            </Button>
+          </div>
         </div>
 
-        <div className="whitespace-pre-wrap">
-          {content}
+        <div className="whitespace-pre-wrap leading-7">
+          {cleanText(content)}
         </div>
       </div>
     );
   }
 
   return (
-    <div className="mt-8 space-y-4">
-      <Card
-        title="Hook Viral"
+    <div className="mt-6 space-y-4">
+      <h2 className="text-2xl font-bold">
+        Hasil
+      </h2>
+
+      <Section
+        title="Hook"
         content={hook}
       />
 
-      <Card
-        title="Script Video"
+      <Section
+        title="Script"
         content={script}
       />
 
-      <Card
-        title="CTA Penjualan"
+      <Section
+        title="CTA"
         content={cta}
       />
 
-      <Card
-        title="Hashtag"
+      <Section
+        title="Hashtags"
         content={hashtags}
       />
     </div>

@@ -120,7 +120,7 @@ export default function CaptionAIPage() {
           </Link>
 
           <h1 className="text-3xl font-bold">
-            Caption AI Gemini
+            Caption AI
           </h1>
 
           <div />

@@ -1,5 +1,6 @@
 "use client";
 
+import { jsPDF } from "jspdf";
 import { Button } from "@/components/ui/button";
 
 type CaptionResultProps = {
@@ -17,10 +18,55 @@ export default function CaptionResult({
   cta,
   hashtags,
 }: CaptionResultProps) {
-  async function copyText(text: string) {
-    await navigator.clipboard.writeText(text);
+  const cleanText = (
+    text: string
+  ) =>
+    text
+      .replace(/^Tentu,\s*/i, "")
+      .replace(/^Tentu\.?\s*/i, "")
+      .replace(/^Berikut adalah\s*/i, "")
+      .replace(/^Berikut\s*/i, "")
+      .replace(/<\/?i>/gi, "")
+      .replace(/<\/?b>/gi, "")
+      .replace(/<\/?strong>/gi, "")
+      .replace(/<\/?em>/gi, "");
+
+  async function copyText(
+    text: string
+  ) {
+    await navigator.clipboard.writeText(
+      cleanText(text)
+    );
 
     alert("Berhasil disalin");
+  }
+
+  function exportPDF(
+    title: string,
+    content: string
+  ) {
+    const doc = new jsPDF();
+
+    doc.setFontSize(18);
+    doc.text(title, 20, 20);
+
+    doc.setFontSize(12);
+
+    const lines =
+      doc.splitTextToSize(
+        cleanText(content),
+        170
+      );
+
+    doc.text(
+      lines,
+      20,
+      35
+    );
+
+    doc.save(
+      `${title}.pdf`
+    );
   }
 
   function Section({
@@ -31,51 +77,70 @@ export default function CaptionResult({
     content: string;
   }) {
     return (
-      <div className="border rounded-lg p-4 shadow-sm">
+      <div className="border rounded-lg p-4 bg-white">
         <div className="flex justify-between items-center mb-3">
           <h3 className="font-bold">
             {title}
           </h3>
 
-          <Button
-            size="sm"
-            onClick={() => copyText(content)}
-          >
-            Copy
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={() =>
+                copyText(content)
+              }
+            >
+              Copy
+            </Button>
+
+            <Button
+              onClick={() =>
+                exportPDF(
+                  title,
+                  content
+                )
+              }
+            >
+              PDF
+            </Button>
+          </div>
         </div>
 
-        <div className="whitespace-pre-wrap text-sm leading-6">
-          {content}
+        <div className="whitespace-pre-wrap leading-7">
+          {cleanText(content)}
         </div>
       </div>
     );
   }
 
   return (
-    <div className="mt-8 space-y-4">
+    <div className="mt-6 space-y-4">
+      <h2 className="text-2xl font-bold">
+        Hasil
+      </h2>
+
       <Section
-        title="Caption Shopee"
+        title="Shopee"
         content={shopee}
       />
 
       <Section
-        title="Caption TikTok"
+        title="TikTok"
         content={tiktok}
       />
 
       <Section
-        title="Caption Instagram"
+        title="Instagram"
         content={instagram}
       />
 
       <Section
-        title="CTA Penjualan"
+        title="CTA"
         content={cta}
       />
 
       <Section
-        title="Hashtag"
+        title="Hashtags"
         content={hashtags}
       />
     </div>

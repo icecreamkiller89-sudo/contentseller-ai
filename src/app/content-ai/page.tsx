@@ -7,6 +7,7 @@ import { useState } from "react";
 import AuthGuard from "@/components/auth/AuthGuard";
 import ContentResult from "@/components/ai/ContentResult";
 import { supabase } from "@/lib/supabase";
+import { Button } from "@/components/ui/button";
 
 export default function ContentAIPage() {
   const [loading, setLoading] =
@@ -164,21 +165,20 @@ export default function ContentAIPage() {
             }
           />
 
-          <button
-            onClick={handleGenerate}
-            disabled={
-              loading ||
-              !namaProduk ||
-              !audience ||
-              !platform ||
-              !gayaKonten
-            }
-            className="border px-4 py-2 rounded"
-          >
-            {loading
-              ? "Generating..."
-              : "Generate Content"}
-          </button>
+          <Button
+  onClick={handleGenerate}
+  disabled={
+    loading ||
+    !namaProduk ||
+    !audience ||
+    !platform ||
+    !gayaKonten
+  }
+>
+  {loading
+    ? "Generating..."
+    : "Generate Content"}
+</Button>
 
           {result && (
   <ContentResult

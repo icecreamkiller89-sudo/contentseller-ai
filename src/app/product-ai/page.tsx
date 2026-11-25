@@ -126,7 +126,7 @@ if (!limitCheck.allowed) {
           </Link>
 
           <h1 className="text-3xl font-bold">
-            Product AI Gemini
+            Product AI
           </h1>
 
           <div />

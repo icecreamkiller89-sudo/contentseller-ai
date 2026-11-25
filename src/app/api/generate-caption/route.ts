@@ -35,7 +35,13 @@ Format:
   "hashtags": ""
 }
 
-Aturan:
+Aturan :
+- Jangan gunakan kata "Tentu"
+- Jangan gunakan kalimat pembuka
+- Jangan gunakan "Berikut adalah"
+- Jangan gunakan sapaan
+- Langsung tampilkan hasil caption
+- Gunakan format yang rapi
 - Jangan tambahkan markdown
 - Jangan tambahkan \`\`\`json
 - Jangan tambahkan penjelasan

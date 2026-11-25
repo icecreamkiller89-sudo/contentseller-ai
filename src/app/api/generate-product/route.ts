@@ -9,7 +9,28 @@ export async function POST(req: Request) {
     const body = await req.json();
 
     const prompt = `
-Buatkan konten marketplace profesional.
+Anda adalah copywriter marketplace profesional.
+
+Buatkan konten produk dengan format berikut:
+
+1. Judul Produk
+
+2. Deskripsi Produk
+
+3. Keunggulan Produk
+
+4. Spesifikasi Produk
+
+5. Call To Action
+
+PENTING:
+- Jangan gunakan kata "Tentu"
+- Jangan gunakan kalimat pembuka
+- Jangan gunakan "Berikut adalah"
+- Jangan gunakan sapaan apa pun
+- Langsung mulai dari poin nomor 1
+- Gunakan bahasa Indonesia profesional
+- Gunakan format yang rapi dan mudah dibaca
 
 Nama Produk:
 ${body.namaProduk}
@@ -19,14 +40,8 @@ ${body.kategori}
 
 Keunggulan:
 ${body.keunggulan}
-
-Output dengan format:
-
-1. Judul Produk
-2. Deskripsi Produk
-3. CTA Penjualan
-4. 15 Hashtag
 `;
+
 
     const response = await ai.models.generateContent({
       model: "gemini-3.5-flash-lite",
